@@ -236,7 +236,7 @@ Takes _WS and FRAME as arguments."
           (buf (find-file-noselect (org-roam-node-file node))))
     (run-hook-with-args 'org-roam-ui-before-open-node-functions id)
     (unless (window-live-p org-roam-ui--window)
-      (if-let ((windows (window-list))
+      (if-let* ((windows (window-list))
                (or-windows (seq-filter
                             (lambda (window)
                               (org-roam-buffer-p
@@ -337,7 +337,7 @@ loaded. Returns `ref' if an entry could not be found."
            (fboundp 'bibtex-completion-get-entry)
            (fboundp 'orb--pre-expand-template)
            (boundp 'orb-preformat-keywords))
-      (if-let ((entry (bibtex-completion-get-entry ref))
+      (if-let* ((entry (bibtex-completion-get-entry ref))
                (orb-preformat-keywords
                 (append orb-preformat-keywords
                         '("author-abbrev" "year" "title"))))
@@ -363,7 +363,7 @@ see https://github.com/org-roam/org-roam-bibtex/blob/919ec8d837a7a3bd25232bdba17
 but is has been adapted to operate on a sting instead of a node. Requires
 `org-ref' to be loaded. Returns the `key' or nil if the format does not match
 the `org-ref-cite-re'"
-  (if-let ((boundp 'org-ref-cite-re)
+  (if-let* ((boundp 'org-ref-cite-re)
            (citekey-list (split-string-and-unquote citekey)))
       (catch 'found
         (dolist (c citekey-list)
@@ -382,7 +382,7 @@ Returns the node with an updated title if the current node is a reference node
 and the key was found in the bibliography, otherwise the node is returned
 unchanged."
   (if-let* (org-roam-ui-retitle-ref-nodes
-            ;; set a fake var because if-let(((boundp 'fake-var))) returns true
+            ;; set a fake var because if-let*(((boundp 'fake-var))) returns true
             (orcr (boundp 'org-ref-cite-re))
             (citekey (cdr (assoc "ROAM_REFS" (nth 5 node))))
             (ref (org-roam-ui--citekey-to-ref citekey))
@@ -685,7 +685,7 @@ The ID of the node you want to travel to.
 The SPEED in ms it takes to make the transition.
 The PADDING around the nodes in the viewport."
   (interactive)
-  (if-let ((node (or id (org-roam-id-at-point))))
+  (if-let* ((node (or id (org-roam-id-at-point))))
       (websocket-send-text org-roam-ui-ws-socket
                            (json-encode `((type . "command")
                                           (data . ((commandName . "zoom")
@@ -700,7 +700,7 @@ The PADDING around the nodes in the viewport."
   "Open the local graph view of the current node.
 Optionally with ID (string), SPEED (number, ms) and PADDING (number, px)."
   (interactive)
-  (if-let ((node (or id (org-roam-id-at-point))))
+  (if-let* ((node (or id (org-roam-id-at-point))))
       (websocket-send-text org-roam-ui-ws-socket
                            (json-encode `((type . "command")
                                           (data . ((commandName . "local")
@@ -713,7 +713,7 @@ Optionally with ID (string), SPEED (number, ms) and PADDING (number, px)."
 (defun org-roam-ui-change-local-graph (&optional id manipulation)
   "Add or remove current node to the local graph. If not in local mode, open local-graph for this node."  
   (interactive)
-  (if-let ((node (or id (org-roam-id-at-point))))
+  (if-let* ((node (or id (org-roam-id-at-point))))
       (websocket-send-text org-roam-ui-ws-socket
                            (json-encode `((type . "command")
                                           (data . ((commandName . "change-local-graph")
